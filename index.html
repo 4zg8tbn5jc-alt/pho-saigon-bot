@@ -1,0 +1,349 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<title>Фо Сайгон</title>
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@600;800&family=Manrope:wght@400;600;700&display=swap">
+<script src="menu.js"></script>
+<style>
+:root{
+  --green:#1f5a3c; --green-2:#2a7550; --lemon:#e6ef7c; --white:#fff;
+  --bg:var(--tg-theme-secondary-bg-color,#f3f4ee);
+  --card:var(--tg-theme-section-bg-color,var(--tg-theme-bg-color,#ffffff));
+  --text:var(--tg-theme-text-color,#17231c);
+  --hint:var(--tg-theme-hint-color,#6c7770);
+  --line:color-mix(in srgb,var(--hint) 22%,transparent);
+  --danger:#c8452c;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0}
+body{background:var(--bg);color:var(--text);font:15px/1.45 Manrope,system-ui,-apple-system,"Segoe UI",sans-serif;padding-bottom:96px}
+button,input,textarea,select{font:inherit;color:inherit}
+button{cursor:pointer}
+h1,h2,.display{font-family:Unbounded,system-ui,sans-serif}
+
+/* шапка */
+.hero{background:var(--green);color:var(--white);padding:18px 16px 14px;position:relative;overflow:hidden}
+.hero:after{content:"🐲";position:absolute;right:-6px;top:-10px;font-size:96px;opacity:.13;transform:rotate(-12deg)}
+.brand{display:inline-block;background:var(--lemon);color:var(--green);font:800 12px/1 Unbounded,sans-serif;letter-spacing:.06em;padding:6px 9px;border-radius:6px}
+.hero h1{margin:10px 0 2px;font-size:22px;font-weight:800;letter-spacing:.01em}
+.hero p{margin:0;opacity:.85;font-size:13px}
+.mode{display:flex;background:rgba(255,255,255,.14);border-radius:12px;padding:3px;margin-top:14px}
+.mode button{flex:1;border:0;background:none;color:var(--white);padding:9px 6px;border-radius:9px;font-weight:700;font-size:14px}
+.mode button.on{background:var(--lemon);color:var(--green)}
+.mode-note{font-size:12px;opacity:.8;margin-top:6px;min-height:1em}
+
+/* вкладки категорий */
+.chips{position:sticky;top:0;z-index:5;display:flex;gap:8px;overflow-x:auto;padding:10px 16px;background:var(--bg);scrollbar-width:none}
+.chips::-webkit-scrollbar{display:none}
+.chip{flex:none;border:1px solid var(--line);background:var(--card);border-radius:99px;padding:7px 14px;font-weight:600;font-size:14px;white-space:nowrap}
+.chip.on{background:var(--green);border-color:var(--green);color:var(--white)}
+
+section.cat{padding:4px 16px 8px;scroll-margin-top:56px}
+section.cat h2{font-size:16px;font-weight:800;margin:12px 2px 10px;text-transform:uppercase;letter-spacing:.03em;color:var(--green)}
+@media (prefers-color-scheme:dark){section.cat h2{color:var(--lemon)}}
+.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.item{background:var(--card);border-radius:16px;overflow:hidden;display:flex;flex-direction:column;box-shadow:0 1px 2px rgba(0,0,0,.05)}
+.pic{aspect-ratio:1/1;background:linear-gradient(140deg,#eef3d0,#d7e9c8);display:grid;place-items:center;font-size:56px;position:relative}
+.pic img{width:100%;height:100%;object-fit:cover;display:block}
+.badge{position:absolute;left:8px;top:8px;background:var(--lemon);color:var(--green);font:800 10px/1 Unbounded,sans-serif;padding:5px 7px;border-radius:6px;text-transform:uppercase}
+.badge.veg{background:#d9f0d8}
+.body{padding:10px 10px 12px;display:flex;flex-direction:column;gap:4px;flex:1}
+.name{font-weight:700;font-size:15px;line-height:1.25}
+.desc{color:var(--hint);font-size:12px;line-height:1.35;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+.foot{margin-top:auto;padding-top:8px}
+.add{width:100%;border:0;border-radius:11px;background:var(--green);color:var(--white);padding:9px;font-weight:700;font-size:14px}
+.add .old{opacity:.6;text-decoration:line-through;font-weight:600;margin-left:4px;font-size:12px}
+.step{display:flex;align-items:center;justify-content:space-between;background:var(--lemon);color:var(--green);border-radius:11px;padding:3px}
+.step button{border:0;background:var(--green);color:var(--white);width:32px;height:32px;border-radius:9px;font-size:18px;font-weight:700;line-height:1}
+.step span{font-weight:800}
+
+/* оформление */
+.view{display:none}.view.on{display:block}
+.panel{background:var(--card);border-radius:16px;margin:12px 16px;padding:14px}
+.panel h3{margin:0 0 10px;font-size:15px}
+.back{border:0;background:none;color:var(--green);font-weight:700;padding:14px 16px 0}
+.line{display:flex;gap:10px;align-items:center;padding:8px 0;border-bottom:1px solid var(--line)}
+.line:last-child{border-bottom:0}
+.line .t{flex:1;min-width:0}
+.line .t b{display:block;font-size:14px}
+.line .t small{color:var(--hint)}
+.line .step{flex:none;gap:8px}
+.line .step button{width:28px;height:28px;font-size:16px}
+.sum{display:flex;justify-content:space-between;padding-top:10px;font-weight:800;font-size:16px}
+.sum.sm{font-weight:600;font-size:14px;color:var(--hint);padding-top:6px}
+label{display:block;font-size:12px;color:var(--hint);margin:10px 2px 4px;font-weight:600}
+input,textarea,select{width:100%;border:1px solid var(--line);background:var(--bg);border-radius:11px;padding:11px 12px;outline:none}
+input:focus,textarea:focus,select:focus{border-color:var(--green)}
+input.bad{border-color:var(--danger)}
+textarea{resize:vertical;min-height:64px}
+.seg{display:flex;gap:6px}
+.seg button{flex:1;border:1px solid var(--line);background:var(--bg);border-radius:11px;padding:10px 6px;font-weight:600;font-size:14px}
+.seg button.on{border-color:var(--green);background:var(--green);color:var(--white)}
+
+/* инфо */
+.info a{color:var(--green);font-weight:700;text-decoration:none}
+@media (prefers-color-scheme:dark){.info a,.back{color:var(--lemon)}}
+.info p{margin:6px 0}
+.links{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px}
+.links a{display:block;text-align:center;background:var(--bg);border-radius:11px;padding:10px;font-size:14px}
+
+/* кнопка вне Telegram (для предпросмотра в браузере) */
+.fab{position:fixed;left:12px;right:12px;bottom:12px;z-index:10;border:0;border-radius:14px;background:var(--green);color:var(--white);padding:15px;font-weight:800;font-size:15px;box-shadow:0 6px 20px rgba(31,90,60,.35)}
+.fab[hidden]{display:none}
+.fab:disabled{opacity:.5}
+</style>
+</head>
+<body>
+
+<div id="menuView" class="view on">
+  <header class="hero">
+    <span class="brand">ФО САЙГОН</span>
+    <h1 id="tagline">Вьетнам без билетов</h1>
+    <p id="heroInfo"></p>
+    <div class="mode" role="tablist" aria-label="Способ получения">
+      <button type="button" data-mode="pickup" class="on">🥡 Самовывоз</button>
+      <button type="button" data-mode="delivery">🛵 Доставка</button>
+    </div>
+    <div class="mode-note" id="modeNote"></div>
+  </header>
+  <nav class="chips" id="chips"></nav>
+  <main id="cats"></main>
+  <div class="panel info" id="info"></div>
+</div>
+
+<div id="cartView" class="view">
+  <button type="button" class="back" id="backBtn">← К меню</button>
+  <div class="panel">
+    <h3>Ваш заказ</h3>
+    <div id="lines"></div>
+    <div id="totals"></div>
+  </div>
+  <div class="panel">
+    <h3>Как получить</h3>
+    <div class="seg" id="modeSeg">
+      <button type="button" data-mode="pickup">🥡 Самовывоз</button>
+      <button type="button" data-mode="delivery">🛵 Доставка</button>
+    </div>
+    <div id="addrBox">
+      <label for="address">Адрес доставки</label>
+      <input id="address" autocomplete="street-address" placeholder="Улица, дом, подъезд, этаж, квартира">
+    </div>
+    <label for="time">Когда</label>
+    <select id="time"></select>
+    <label for="name">Имя</label>
+    <input id="name" autocomplete="given-name" placeholder="Как к вам обращаться">
+    <label for="phone">Телефон</label>
+    <input id="phone" type="tel" autocomplete="tel" placeholder="8 900 000 00 00">
+    <label>Оплата при получении</label>
+    <div class="seg" id="paySeg">
+      <button type="button" data-pay="card" class="on">💳 Картой</button>
+      <button type="button" data-pay="cash">💵 Наличными</button>
+    </div>
+    <label for="comment">Комментарий</label>
+    <textarea id="comment" placeholder="Например: нэм со свининой, без кинзы, сдача с 2000"></textarea>
+  </div>
+</div>
+
+<button type="button" class="fab" id="fab" hidden></button>
+
+<script>
+const M = window.MENU, C = M.cafe;
+const tg = window.Telegram && window.Telegram.WebApp;
+const inTG = !!(tg && tg.initData);
+const ITEMS = {}; M.categories.forEach(c => c.items.forEach(i => ITEMS[i.id] = i));
+const $ = id => document.getElementById(id);
+const esc = s => String(s ?? "").replace(/[&<>"]/g, ch => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[ch]));
+const money = v => Math.round(v).toLocaleString("ru-RU") + " " + (C.currency || "₽");
+
+const S = { cart:{}, mode:"pickup", pay:"card", view:"menu" };
+const store = {
+  get(k){ try{ return JSON.parse(localStorage.getItem("ps."+k)) }catch(e){ return null } },
+  set(k,v){ try{ localStorage.setItem("ps."+k, JSON.stringify(v)) }catch(e){} }
+};
+Object.assign(S.cart, store.get("cart") || {});
+for (const id in S.cart) if (!ITEMS[id]) delete S.cart[id];
+S.mode = store.get("mode") || "pickup";
+
+const price = it => it.price + (S.mode === "delivery" ? (C.delivery_markup || 0) : 0);
+const count = () => Object.values(S.cart).reduce((a,b) => a+b, 0);
+const subtotal = () => Object.entries(S.cart).reduce((a,[id,q]) => a + price(ITEMS[id]) * q, 0);
+const fee = () => S.mode === "delivery" ? (C.delivery_fee || 0) : 0;
+const haptic = t => { try{ inTG && tg.HapticFeedback.impactOccurred(t || "light") }catch(e){} };
+
+/* ---------- меню ---------- */
+function renderHero(){
+  $("tagline").textContent = C.tagline;
+  $("heroInfo").textContent = `${C.hours} · ТРЦ «Перекрёсток», 3 этаж · ⭐ ${C.rating.split(" ·")[0]}`;
+  document.querySelectorAll("[data-mode]").forEach(b => b.classList.toggle("on", b.dataset.mode === S.mode));
+  $("modeNote").textContent = S.mode === "delivery"
+    ? `Доставка по городу. Цены в доставке на ${C.delivery_markup} ₽ выше, чем в кафе.`
+    : "Заберите заказ на фудкорте — приготовим к нужному времени.";
+}
+function controls(it){
+  const q = S.cart[it.id] || 0;
+  if (q) return `<div class="step"><button type="button" data-act="dec" aria-label="Убрать">−</button><span>${q}</span><button type="button" data-act="inc" aria-label="Добавить">+</button></div>`;
+  return `<button type="button" class="add" data-act="inc">${money(price(it))}</button>`;
+}
+function renderMenu(){
+  $("chips").innerHTML = M.categories.map((c,i) => `<button type="button" class="chip${i?"":" on"}" data-cat="${c.id}">${esc(c.title)}</button>`).join("");
+  $("cats").innerHTML = M.categories.map(c => `
+    <section class="cat" id="cat-${c.id}">
+      <h2>${esc(c.title)}</h2>
+      <div class="grid">${c.items.map(it => `
+        <article class="item" data-id="${it.id}">
+          <div class="pic">${it.img ? `<img src="${esc(it.img)}" alt="${esc(it.name)}" loading="lazy">` : it.emoji}
+            ${(it.tags||[]).includes("hit") ? '<span class="badge">Хит</span>' : (it.tags||[]).includes("veg") ? '<span class="badge veg">Без мяса</span>' : ""}</div>
+          <div class="body">
+            <div class="name">${esc(it.name)}</div>
+            ${it.size ? `<small style="color:var(--hint);font-size:12px">${esc(it.size)}</small>` : ""}
+            <div class="desc">${esc(it.desc)}</div>
+            <div class="foot">${controls(it)}</div>
+          </div>
+        </article>`).join("")}</div>
+    </section>`).join("");
+}
+function refreshControls(){
+  document.querySelectorAll(".item").forEach(el => el.querySelector(".foot").innerHTML = controls(ITEMS[el.dataset.id]));
+}
+function renderInfo(){
+  const map = "https://yandex.ru/maps/?text=" + encodeURIComponent(C.map_query);
+  $("info").innerHTML = `
+    <h3>Как нас найти</h3>
+    <p>📍 ${esc(C.address)}, фудкорт</p>
+    <p>🕙 ${esc(C.hours)}</p>
+    <p>📞 <a href="tel:${C.phone.replace(/\s/g,"")}">${esc(C.phone)}</a></p>
+    <p>⭐ ${esc(C.rating)}</p>
+    <div class="links">
+      <a href="${map}" data-ext>🗺 На карте</a>
+      <a href="${esc(C.channel)}" data-ext>📣 Наш канал</a>
+      <a href="${esc(C.site)}" data-ext>🌐 Сайт</a>
+      <a href="${esc(C.instagram)}" data-ext>📸 Instagram</a>
+    </div>`;
+}
+
+/* ---------- корзина ---------- */
+function renderCart(){
+  const ids = Object.keys(S.cart);
+  $("lines").innerHTML = ids.map(id => { const it = ITEMS[id], q = S.cart[id]; return `
+    <div class="line item-line" data-id="${id}">
+      <div class="t"><b>${it.emoji} ${esc(it.name)}</b><small>${money(price(it))} × ${q} = ${money(price(it)*q)}</small></div>
+      <div class="step"><button type="button" data-act="dec" aria-label="Убрать">−</button><span>${q}</span><button type="button" data-act="inc" aria-label="Добавить">+</button></div>
+    </div>`; }).join("") || `<p style="color:var(--hint)">Корзина пуста</p>`;
+  $("totals").innerHTML = (fee() ? `<div class="sum sm"><span>Доставка</span><span>${money(fee())}</span></div>` : "")
+    + `<div class="sum"><span>Итого</span><span>${money(subtotal()+fee())}</span></div>`;
+  $("addrBox").style.display = S.mode === "delivery" ? "" : "none";
+  document.querySelectorAll("#modeSeg [data-mode]").forEach(b => b.classList.toggle("on", b.dataset.mode === S.mode));
+  document.querySelectorAll("[data-pay]").forEach(b => b.classList.toggle("on", b.dataset.pay === S.pay));
+}
+function fillTimes(){
+  const sel = $("time"), now = new Date(), opts = ['<option value="">Как можно скорее</option>'];
+  const t = new Date(now); t.setMinutes(Math.ceil((t.getMinutes()+40)/15)*15, 0, 0);
+  while (t.getHours() < C.close_hour && t.getDate() === now.getDate()) {
+    if (t.getHours() >= C.open_hour) {
+      const s = t.toTimeString().slice(0,5); opts.push(`<option value="к ${s}">к ${s}</option>`);
+    }
+    t.setMinutes(t.getMinutes()+15);
+  }
+  sel.innerHTML = opts.join("");
+}
+
+/* ---------- главная кнопка ---------- */
+const fab = $("fab");
+function setMain(text, active = true){
+  if (inTG) tg.MainButton.setParams({ text, is_visible:true, is_active:active, color:"#1f5a3c", text_color:"#ffffff" });
+  else { fab.textContent = text; fab.hidden = false; fab.disabled = !active; }
+}
+function hideMain(){ inTG ? tg.MainButton.hide() : (fab.hidden = true); }
+function update(){
+  store.set("cart", S.cart); store.set("mode", S.mode);
+  const n = count();
+  if (S.view === "menu") n ? setMain(`Корзина · ${n} · ${money(subtotal()+fee())}`) : hideMain();
+  else n ? setMain(`Заказать · ${money(subtotal()+fee())}`) : setMain("Корзина пуста", false);
+}
+function go(view){
+  S.view = view;
+  $("menuView").classList.toggle("on", view === "menu");
+  $("cartView").classList.toggle("on", view === "cart");
+  if (inTG) view === "cart" ? tg.BackButton.show() : tg.BackButton.hide();
+  if (view === "cart") { fillTimes(); renderCart(); }
+  else { renderHero(); refreshControls(); }
+  window.scrollTo(0,0); update();
+}
+function submit(){
+  const name = $("name").value.trim(), phone = $("phone").value.trim(), address = $("address").value.trim();
+  const bad = [];
+  if (!name) bad.push("name");
+  if (phone.replace(/\D/g,"").length < 10) bad.push("phone");
+  if (S.mode === "delivery" && address.length < 5) bad.push("address");
+  ["name","phone","address"].forEach(f => $(f).classList.toggle("bad", bad.includes(f)));
+  if (bad.length) {
+    haptic("heavy");
+    const msg = "Заполните: " + bad.map(f => ({name:"имя", phone:"телефон", address:"адрес"}[f])).join(", ");
+    inTG ? tg.showAlert(msg) : alert(msg);
+    return;
+  }
+  store.set("contact", { name, phone, address });
+  const payload = {
+    type: "order", mode: S.mode, payment: S.pay,
+    items: Object.entries(S.cart).map(([id, qty]) => ({ id, qty })),
+    name, phone, address: S.mode === "delivery" ? address : "",
+    time: $("time").value, comment: $("comment").value.trim().slice(0, 300)
+  };
+  S.cart = {}; store.set("cart", {});
+  if (inTG) tg.sendData(JSON.stringify(payload));
+  else alert("Предпросмотр вне Telegram. В боте отправится:\n\n" + JSON.stringify(payload, null, 2));
+}
+function onMain(){ if (S.view === "menu") { haptic(); go("cart"); } else submit(); }
+
+/* ---------- события ---------- */
+document.addEventListener("click", e => {
+  const ext = e.target.closest("[data-ext]");
+  if (ext && inTG) { e.preventDefault(); const u = ext.href; u.startsWith("https://t.me/") ? tg.openTelegramLink(u) : tg.openLink(u); return; }
+  const act = e.target.closest("[data-act]");
+  if (act) {
+    const id = act.closest("[data-id]").dataset.id;
+    S.cart[id] = Math.max(0, Math.min(50, (S.cart[id] || 0) + (act.dataset.act === "inc" ? 1 : -1)));
+    if (!S.cart[id]) delete S.cart[id];
+    haptic();
+    S.view === "cart" ? renderCart() : refreshControls();
+    update(); return;
+  }
+  const m = e.target.closest("[data-mode]");
+  if (m) { S.mode = m.dataset.mode; haptic(); S.view === "cart" ? renderCart() : (renderHero(), refreshControls()); update(); return; }
+  const p = e.target.closest("[data-pay]");
+  if (p) { S.pay = p.dataset.pay; renderCart(); return; }
+  const c = e.target.closest("[data-cat]");
+  if (c) {
+    document.querySelectorAll(".chip").forEach(x => x.classList.toggle("on", x === c));
+    $("cat-" + c.dataset.cat).scrollIntoView({ behavior:"smooth" });
+  }
+});
+$("backBtn").onclick = () => go("menu");
+fab.onclick = onMain;
+
+/* подсветка категории при прокрутке */
+const io = new IntersectionObserver(es => es.forEach(en => {
+  if (en.isIntersecting) document.querySelectorAll(".chip").forEach(x => x.classList.toggle("on", "cat-" + x.dataset.cat === en.target.id));
+}), { rootMargin: "-45% 0px -50% 0px" });
+
+/* ---------- старт ---------- */
+renderMenu(); renderInfo(); renderHero();
+document.querySelectorAll("section.cat").forEach(s => io.observe(s));
+const contact = store.get("contact") || {};
+$("name").value = contact.name || (inTG && tg.initDataUnsafe.user ? tg.initDataUnsafe.user.first_name : "") || "";
+$("phone").value = contact.phone || "";
+$("address").value = contact.address || "";
+if (inTG) {
+  tg.ready(); tg.expand();
+  try { tg.setHeaderColor("#1f5a3c"); } catch(e) {}
+  tg.MainButton.onClick(onMain);
+  tg.BackButton.onClick(() => go("menu"));
+}
+update();
+</script>
+</body>
+</html>
